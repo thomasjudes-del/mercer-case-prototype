@@ -1,0 +1,71 @@
+const I={
+ report:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>',
+ photo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m5 18 5-5 3 3 2-2 4 4"/></svg>',
+ folder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h7l2 2h9v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+ person:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+ notebook:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v18M3 7h4M3 12h4M3 17h4"/></svg>',
+ chevron:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6"/></svg>',
+ star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/></svg>',
+ starFill:'<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/></svg>',
+ all:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 5h16M4 12h16M4 19h16"/></svg>',
+ unread:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="7"/></svg>',
+ saved:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4h12v17l-6-4-6 4z"/></svg>'
+};
+ifiles.innerHTML=I.folder;ipeople.innerHTML=I.person;inotes.innerHTML=I.notebook;
+const T={
+ en:{archive:'PRIVATE CASE ARCHIVE',status:'STATUS: REOPENED',files:'CASE FILES',people:'PEOPLE',notes:'NOTEBOOK',all:'ALL',reports:'REPORTS',photos:'PHOTOS',unread:'UNREAD',saved:'SAVED',leads:'CURRENT LEADS',bookmarks:'BOOKMARKS',mine:'MY NOTES',photo:'PHOTO',report:'REPORT',press:'PUBLIC / PRESS'},
+ fr:{archive:'ARCHIVES PRIVEES',status:'STATUT : REOUVERT',files:'DOSSIER',people:'PERSONNES',notes:'CARNET',all:'TOUT',reports:'RAPPORTS',photos:'PHOTOS',unread:'NON LUS',saved:'SIGNETS',leads:'PISTES EN COURS',bookmarks:'SIGNETS',mine:'MES NOTES',photo:'PHOTO',report:'RAPPORT',press:'PUBLIC / PRESSE'}
+};
+const D={
+ F01:{type:'report',title:{en:'Case Summary - 2016',fr:'Synthese de l affaire - 2016'},src:'official',from:{en:'River County Police archive',fr:'Archives de la police du comte'},body:{en:'<h2>Missing Person - Emily A. Mercer</h2><p>Emily Mercer, 24, was reported missing on April 19, 2016. Daniel Reyes said he last saw her that afternoon.</p><p>Two days later, a burned dark gray sedan bearing Emily\'s registration plate was recovered off County Road 8.</p>',fr:'<h2>Disparition - Emily A. Mercer</h2><p>Emily Mercer, 24 ans, est portee disparue le 19 avril 2016. Daniel Reyes declare l avoir vue pour la derniere fois cet apres-midi-la.</p><p>Deux jours plus tard, une berline gris fonce portant sa plaque est retrouvee incendiee pres de County Road 8.</p>'}},
+ F02:{type:'report',title:{en:'Burned Vehicle Report',fr:'Rapport - vehicule incendie'},src:'official',from:{en:'Officer Harris / River County Police',fr:'Officer Harris / Police du comte'},body:{en:'<h2>Vehicle Recovery</h2><p>Plate recovered: <b>482-LZK</b>. Personal effects: gym bag, bracelet, registration fragments.</p><p>Vehicle transferred for identification.</p>',fr:'<h2>Decouverte du vehicule</h2><p>Plaque retrouvee : <b>482-LZK</b>. Effets personnels : sac de sport, bracelet, fragments de certificat d immatriculation.</p><p>Le vehicule est transfere pour identification.</p>'}},
+ F03:{type:'photo',title:{en:'Burned Vehicle - Scene Photo',fr:'Vehicule incendie - photo de scene'},src:'official',from:{en:'Crime-scene archive',fr:'Archives de scene'},imgClass:'burn',caption:{en:'County Road 8 - April 21, 2016',fr:'County Road 8 - 21 avril 2016'}},
+ F04:{type:'report',title:{en:'Missing Person Bulletin',fr:'Avis de disparition'},src:'press',from:{en:'Public bulletin / local press',fr:'Avis public / presse locale'},body:{en:'<h2>Missing - Emily Mercer</h2><p>Emily A. Mercer, 24. Dark gray 2008 sedan. Plate <b>482-LZK</b>.</p>',fr:'<h2>Disparue - Emily Mercer</h2><p>Emily A. Mercer, 24 ans. Berline gris fonce 2008. Plaque <b>482-LZK</b>.</p>'}},
+ F05:{type:'report',title:{en:'Vehicle Recovery - 2026',fr:'Decouverte d un vehicule - 2026'},src:'official',from:{en:'2026 incident report',fr:'Rapport d intervention 2026'},body:{en:'<h2>Westway Market</h2><p>August 15, 2026. A dark gray 2008 sedan was located in the rear lot. Plate: <b>482-LZK</b>. No visible fire damage.</p>',fr:'<h2>Westway Market</h2><p>15 aout 2026. Une berline gris fonce de 2008 est retrouvee sur le parking arriere. Plaque : <b>482-LZK</b>. Aucune trace visible d incendie.</p>'}},
+ F06:{type:'photo',title:{en:'Parking Lot - Vehicle Photo',fr:'Parking - photo du vehicule'},src:'official',from:{en:'Responding officer',fr:'Agent intervenant'},imgClass:'parking',caption:{en:'Westway Market - August 15, 2026',fr:'Westway Market - 15 aout 2026'}},
+ F07:{type:'photo',title:{en:'Vehicle - Plate Close-up',fr:'Vehicule - gros plan de la plaque'},src:'official',from:{en:'Crime-scene archive',fr:'Archives de scene'},imgClass:'plate',caption:{en:'Plate visible: 482-LZK',fr:'Plaque visible : 482-LZK'}}
+};
+const P={
+ emily:{name:'Emily Mercer',role:{en:'Missing person',fr:'Personne disparue'},status:{en:'Missing since Apr 19, 2016',fr:'Disparue depuis le 19 avril 2016'}},
+ daniel:{name:'Daniel Reyes',role:{en:'Boyfriend at the time',fr:'Compagnon a l epoque'},status:{en:'Interview unavailable',fr:'Entretien indisponible'}},
+ harris:{name:'Officer Mark Harris',role:{en:'Lead investigator (2016)',fr:'Enqueteur principal (2016)'},status:{en:'Available for interview',fr:'Disponible pour entretien'}},
+ chloe:{name:'Chloe Mercer',role:{en:'Sister',fr:'Soeur'},status:{en:'Interview unavailable',fr:'Entretien indisponible'}}
+};
+let S=JSON.parse(localStorage.mercerMedia||'null')||{lang:'en',tab:'files',filter:'all',seen:[],book:[],notes:'',people:['emily','daniel','harris'],peopleSeen:false,notesSeen:false};
+function save(){localStorage.mercerMedia=JSON.stringify(S)}
+function tx(k){return T[S.lang][k]}
+function setLang(l){S.lang=l;render()}
+function go(t){S.tab=t;if(t==='people')S.peopleSeen=true;if(t==='notes')S.notesSeen=true;render()}
+function dots(){df.className=Object.keys(D).some(x=>!S.seen.includes(x))?'dot':'';dp.className=!S.peopleSeen?'dot':'';dn.className=!S.notesSeen&&S.seen.length>1?'dot':''}
+function render(){save();archive.textContent=tx('archive');status.textContent=tx('status');tf.querySelector('span:last-child').textContent=tx('files');tp.querySelector('span:last-child').textContent=tx('people');tn.querySelector('span:last-child').textContent=tx('notes');[tf,tp,tn].forEach(x=>x.classList.remove('on'));({files:tf,people:tp,notes:tn}[S.tab]).classList.add('on');en.classList.toggle('on',S.lang==='en');fr.classList.toggle('on',S.lang==='fr');dots();if(S.tab==='files')files();if(S.tab==='people')people();if(S.tab==='notes')notes()}
+function labelClass(d){return d.src==='press'?'press':d.type}
+function typeLabel(d){return d.src==='press'?tx('press'):tx(d.type)}
+function files(){let a=Object.keys(D).filter(id=>S.filter==='all'||D[id].type===S.filter||(S.filter==='unread'&&!S.seen.includes(id))||(S.filter==='saved'&&S.book.includes(id)));app.innerHTML='<div class="toolbar">'+[['all',I.all,tx('all')],['report',I.report,tx('reports')],['photo',I.photo,tx('photos')],['unread',I.unread,tx('unread')],['saved',I.saved,tx('saved')]].map(x=>`<button class="chip ${S.filter===x[0]?'on':''}" onclick="S.filter='${x[0]}';render()">${x[1]}${x[2]}</button>`).join('')+'</div>'+a.map(id=>{let d=D[id],c=labelClass(d);return `<button class="file ${d.type==='photo'?'photo':''} ${d.src==='press'?'press':''} ${S.seen.includes(id)?'read':''}" onclick="openDoc('${id}')"><div class="filein"><span class="typeicon">${d.type==='photo'?I.photo:I.report}</span><span><div class="ftitle">${d.title[S.lang]}</div><div class="sub"><span class="kind ${c}">${typeLabel(d)}</span><span>&middot;</span><span>${d.from[S.lang]}</span></div></span><span class="flags">${!S.seen.includes(id)?'<i class="unread"></i>':''}${S.book.includes(id)?`<span class="star">${I.starFill}</span>`:''}</span></div></button>`}).join('')}
+function openDoc(id){if(!S.seen.includes(id))S.seen.push(id);save();let d=D[id],c=labelClass(d);let content=d.type==='photo'?`<div class="photoWrap"><div class="evidenceImg ${d.imgClass}" role="img" aria-label="${d.title[S.lang]}"></div><div class="caption"><span>${d.caption[S.lang]}</span><span>${d.from[S.lang]}</span></div></div>`:`<div class="paper">${d.body[S.lang]}</div>`;app.innerHTML=`<div class="reader"><div class="rhead"><div><div class="rtype ${c}">${d.type==='photo'?I.photo:I.report}${typeLabel(d)}</div><h2>${d.title[S.lang]}</h2></div><button class="btn bookbtn" aria-label="bookmark" onclick="bookmark('${id}')">${S.book.includes(id)?I.starFill:I.star}</button></div><div class="source">${d.from[S.lang]} &middot; CASE #16-0419</div>${content}</div>`;dots()}
+function bookmark(id){let i=S.book.indexOf(id);i<0?S.book.push(id):S.book.splice(i,1);save();openDoc(id)}
+function people(){app.innerHTML='<div class="people">'+S.people.map(id=>{let p=P[id];return `<button class="person ${id}" onclick="profile('${id}')"><span class="portraitwrap"><span class="portrait" role="img" aria-label="${p.name}"></span></span><span class="pinfo"><span class="pname">${p.name}</span><span class="role">${p.role[S.lang]}</span><span class="pstatus">${p.status[S.lang]}</span></span><span class="chev">${I.chevron}</span></button>`}).join('')+'</div>'}
+function profile(id){let p=P[id];app.innerHTML=`<div class="profile ${id}"><div class="profiletop"><div class="portraitbox"><span class="portrait" role="img" aria-label="${p.name}"></span></div><div><div class="pname">${p.name}</div><div class="role">${p.role[S.lang]}</div><div class="pstatus">${p.status[S.lang]}</div></div></div>${id==='harris'?`<button class="btn" style="margin-top:15px;width:100%" onclick="interview()">${S.lang==='fr'?'INTERROGER HARRIS':'INTERVIEW HARRIS'}</button>`:''}</div>`}
+function interview(){app.innerHTML=`<div class="profile"><div class="chat">${S.lang==='fr'?"La plaque correspondait. Le modele et la couleur aussi. Des affaires d Emily etaient dans la voiture.":"Plate matched. Make and color matched. Some of Emily's belongings were inside."}</div><button class="choice" onclick="ask()">${S.lang==='fr'?"Que vous rappelez-vous de sa famille ?":"What do you remember about her family?"}</button></div>`}
+function ask(){if(!S.people.includes('chloe'))S.people.push('chloe');S.peopleSeen=false;save();app.innerHTML+=`<div class="chat">${S.lang==='fr'?"Sa soeur avait seize ans. Chloe. Je ne la melerais pas de nouveau a cette affaire.":"Her sister was sixteen. Chloe. I wouldn't drag her back into this."}</div>`;dots()}
+function notes(){S.notesSeen=true;save();app.innerHTML=`<div class="section"><h3>${tx('leads')}</h3><div class="lead done">${S.lang==='fr'?"Comprendre pourquoi l affaire a ete rouverte.":"Understand why the case was reopened."}</div><div class="lead active">${S.lang==='fr'?"Etablir si l identification du vehicule de 2016 est fiable.":"Determine whether the 2016 vehicle identification is reliable."}</div></div><div class="section"><h3>${tx('bookmarks')}</h3>${S.book.map(id=>`<div class="bookmark" onclick="go('files');openDoc('${id}')">${D[id].title[S.lang]}</div>`).join('')||'None yet'}</div><div class="section"><h3>${tx('mine')}</h3><textarea class="note" oninput="S.notes=this.value;save()">${S.notes}</textarea></div>`;dots()}
+async function loadMedia(){
+ try{
+  const source='https://raw.githubusercontent.com/thomasjudes-del/mercer-case-prototype/1777e0c12cca008b7705431f0c540d4085a75f4b/index.html';
+  const r=await fetch(source,{cache:'no-store'});
+  if(!r.ok)throw new Error(`media source: ${r.status}`);
+  const legacy=await r.text();
+  const match=legacy.match(/--media:url\("data:image\/jpeg;base64,([^\"]+)"\)/);
+  if(!match)throw new Error('media payload not found');
+  const raw=atob(match[1]);
+  const bytes=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+  const mediaUrl=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
+  document.documentElement.style.setProperty('--media',`url("${mediaUrl}")`);
+  document.body.classList.add('media-ready');
+ }catch(e){
+  console.error('Mercer media load failed',e);
+  document.body.classList.add('media-error');
+ }
+ render();
+}
+loadMedia();
