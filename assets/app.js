@@ -48,24 +48,4 @@ function profile(id){let p=P[id];app.innerHTML=`<div class="profile ${id}"><div 
 function interview(){app.innerHTML=`<div class="profile"><div class="chat">${S.lang==='fr'?"La plaque correspondait. Le modele et la couleur aussi. Des affaires d Emily etaient dans la voiture.":"Plate matched. Make and color matched. Some of Emily's belongings were inside."}</div><button class="choice" onclick="ask()">${S.lang==='fr'?"Que vous rappelez-vous de sa famille ?":"What do you remember about her family?"}</button></div>`}
 function ask(){if(!S.people.includes('chloe'))S.people.push('chloe');S.peopleSeen=false;save();app.innerHTML+=`<div class="chat">${S.lang==='fr'?"Sa soeur avait seize ans. Chloe. Je ne la melerais pas de nouveau a cette affaire.":"Her sister was sixteen. Chloe. I wouldn't drag her back into this."}</div>`;dots()}
 function notes(){S.notesSeen=true;save();app.innerHTML=`<div class="section"><h3>${tx('leads')}</h3><div class="lead done">${S.lang==='fr'?"Comprendre pourquoi l affaire a ete rouverte.":"Understand why the case was reopened."}</div><div class="lead active">${S.lang==='fr'?"Etablir si l identification du vehicule de 2016 est fiable.":"Determine whether the 2016 vehicle identification is reliable."}</div></div><div class="section"><h3>${tx('bookmarks')}</h3>${S.book.map(id=>`<div class="bookmark" onclick="go('files');openDoc('${id}')">${D[id].title[S.lang]}</div>`).join('')||'None yet'}</div><div class="section"><h3>${tx('mine')}</h3><textarea class="note" oninput="S.notes=this.value;save()">${S.notes}</textarea></div>`;dots()}
-async function loadMedia(){
- try{
-  const source='https://raw.githubusercontent.com/thomasjudes-del/mercer-case-prototype/1777e0c12cca008b7705431f0c540d4085a75f4b/index.html';
-  const r=await fetch(source,{cache:'no-store'});
-  if(!r.ok)throw new Error(`media source: ${r.status}`);
-  const legacy=await r.text();
-  const match=legacy.match(/--media:url\("data:image\/jpeg;base64,([^\"]+)"\)/);
-  if(!match)throw new Error('media payload not found');
-  const raw=atob(match[1]);
-  const bytes=new Uint8Array(raw.length);
-  for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
-  const mediaUrl=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
-  document.documentElement.style.setProperty('--media',`url("${mediaUrl}")`);
-  document.body.classList.add('media-ready');
- }catch(e){
-  console.error('Mercer media load failed',e);
-  document.body.classList.add('media-error');
- }
- render();
-}
-loadMedia();
+render();

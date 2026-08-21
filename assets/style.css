@@ -1,7 +1,7 @@
 :root{
   --bg:#0b0e11;--panel:#12171c;--panel2:#171d23;--line:#2b343d;--line2:#39444f;
   --text:#f4f2ed;--muted:#929ba4;--gold:#d3b47a;--red:#f04c4c;
-  --blue:#5b8cff;--green:#51c77a;--purple:#b67add;--amber:#e0ad4f;--media:none;
+  --blue:#5b8cff;--green:#51c77a;--purple:#b67add;--amber:#e0ad4f;--media:url("mercer-sprite.jpg?v=4");
 }
 *{box-sizing:border-box}
 html{background:var(--bg)}
@@ -91,4 +91,3 @@ main{padding:0 14px 28px}
 .note{width:100%;min-height:130px;background:#0d1115;color:#fff;border:1px solid #38434d;border-radius:10px;padding:11px;resize:vertical}
 .empty{text-align:center;color:#888;padding:55px 20px}
 @media(min-width:760px){body{max-width:620px;margin:auto;border-left:1px solid #1c2228;border-right:1px solid #1c2228}.top{padding-top:32px}}
-.media-error .portrait,.media-error .evidenceImg{background-image:none!important}.media-error .portrait:after{content:"MEDIA";display:grid;place-items:center;height:100%;font-size:9px;color:#7f8992;letter-spacing:.12em}
