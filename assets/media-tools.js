@@ -1,5 +1,6 @@
 (function(){
   let activeUrl=null;
+  let activeFile=null;
   const defs={
     burn:{kind:'evidence',index:0,title:{en:'Burned Vehicle - Scene Photo',fr:'Vehicule incendie - photo de scene'},file:'mercer-burned-vehicle-2016.jpg'},
     plate:{kind:'evidence',index:1,title:{en:'Vehicle - Plate Close-up',fr:'Vehicule - gros plan de la plaque'},file:'mercer-plate-482-LZK.jpg'},
@@ -57,7 +58,7 @@
     ctx.imageSmoothingEnabled=true;
     ctx.imageSmoothingQuality='high';
     ctx.drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
-    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.94));
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.96));
     if(!blob)throw new Error('Could not create image');
     return {blob,width:canvas.width,height:canvas.height};
   }
@@ -67,10 +68,10 @@
     if(m)return m;
     m=document.createElement('div');
     m.id='mediaViewer';m.className='mediaViewer';m.setAttribute('aria-hidden','true');
-    m.innerHTML=`<div class="mvTop"><div><div class="mvEy">${text('EVIDENCE VIEWER','VISIONNEUSE')}</div><div class="mvTitle"></div><div class="mvMeta"></div></div><button class="mvClose" aria-label="Close">×</button></div><div class="mvStage"><img class="mvImage" alt=""></div><div class="mvActions"><a class="mvAction mvOpen" target="_blank" rel="noopener">${text('OPEN ORIGINAL','OUVRIR L ORIGINAL')}</a><a class="mvAction mvDownload">${text('DOWNLOAD','TELECHARGER')}</a></div>`;
+    m.innerHTML=`<div class="mvStage"><img class="mvImage" alt=""></div><div class="mvTop"><div><div class="mvEy">${text('EVIDENCE VIEWER','VISIONNEUSE')}</div><div class="mvTitle"></div><div class="mvMeta"></div></div><button class="mvClose" aria-label="Close">×</button></div><div class="mvActions"><button class="mvAction mvSave" type="button">${text('SAVE TO PHOTOS','ENREGISTRER DANS PHOTOS')}</button><div class="mvHint">${text('On iPhone, choose Save Image in the share sheet.','Sur iPhone, choisissez Enregistrer l image dans la feuille de partage.')}</div></div>`;
     document.body.appendChild(m);
     m.querySelector('.mvClose').onclick=close;
-    m.addEventListener('click',e=>{if(e.target===m)close()});
+    m.querySelector('.mvSave').onclick=shareCurrent;
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&m.classList.contains('show'))close()});
     return m;
   }
@@ -79,22 +80,38 @@
     const m=document.getElementById('mediaViewer');
     if(m){m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.classList.remove('mediaViewerOpen')}
     if(activeUrl){URL.revokeObjectURL(activeUrl);activeUrl=null}
+    activeFile=null;
+  }
+
+  async function shareCurrent(){
+    if(!activeFile)return;
+    try{
+      if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[activeFile]}))){
+        await navigator.share({files:[activeFile],title:activeFile.name});
+        return;
+      }
+    }catch(err){
+      if(err&&err.name==='AbortError')return;
+      console.error('Share failed',err);
+    }
+    const url=activeUrl;
+    if(url)window.open(url,'_blank');
   }
 
   async function openDef(def){
     const m=modal();
     m.querySelector('.mvTitle').textContent=def.title[lang()];
-    m.querySelector('.mvMeta').textContent=text('Loading original pixels...','Chargement des pixels source...');
-    m.querySelector('.mvImage').removeAttribute('src');
+    m.querySelector('.mvMeta').textContent=text('Loading source image...','Chargement de l image source...');
+    const im=m.querySelector('.mvImage');
+    im.removeAttribute('src');im.classList.add('mvLoading');
     m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.classList.add('mediaViewerOpen');
     try{
       const out=await crop(def);
       if(activeUrl)URL.revokeObjectURL(activeUrl);
       activeUrl=URL.createObjectURL(out.blob);
-      const im=m.querySelector('.mvImage');im.src=activeUrl;im.alt=def.title[lang()];
+      activeFile=new File([out.blob],def.file,{type:'image/jpeg'});
+      im.src=activeUrl;im.alt=def.title[lang()];im.classList.remove('mvLoading');
       m.querySelector('.mvMeta').textContent=`${out.width} × ${out.height} px · ${text('source resolution','resolution source')}`;
-      const open=m.querySelector('.mvOpen');open.href=activeUrl;
-      const dl=m.querySelector('.mvDownload');dl.href=activeUrl;dl.download=def.file;
     }catch(err){
       console.error(err);
       m.querySelector('.mvMeta').textContent=text('Image unavailable','Image indisponible');
