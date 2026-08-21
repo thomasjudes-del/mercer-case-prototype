@@ -102,28 +102,24 @@
   }
 
   function decorate(root=document){
-    root.querySelectorAll('.evidenceImg:not([data-inspect])').forEach(el=>{
+    root.querySelectorAll('.evidenceImg:not([data-inspect]),.portrait:not([data-inspect])').forEach(el=>{
       el.dataset.inspect='1';el.classList.add('mediaInspectable');el.setAttribute('role','button');el.setAttribute('tabindex','0');
-      el.setAttribute('aria-label',text('Open image full screen','Ouvrir l image en plein ecran'));
-    });
-    root.querySelectorAll('.profile .portrait:not([data-inspect])').forEach(el=>{
-      el.dataset.inspect='1';el.classList.add('mediaInspectable');el.setAttribute('role','button');el.setAttribute('tabindex','0');
-      el.setAttribute('aria-label',text('Open portrait full screen','Ouvrir le portrait en plein ecran'));
+      el.setAttribute('aria-label',el.classList.contains('portrait')?text('Open portrait full screen','Ouvrir le portrait en plein ecran'):text('Open image full screen','Ouvrir l image en plein ecran'));
     });
   }
 
   document.addEventListener('click',e=>{
-    const el=e.target.closest('.evidenceImg.mediaInspectable,.profile .portrait.mediaInspectable');
+    const el=e.target.closest('.evidenceImg.mediaInspectable,.portrait.mediaInspectable');
     if(!el)return;
     const def=targetDef(el);if(!def)return;
     e.preventDefault();e.stopPropagation();openDef(def);
   });
   document.addEventListener('keydown',e=>{
     if(e.key!=='Enter'&&e.key!==' ')return;
-    const el=e.target.closest('.evidenceImg.mediaInspectable,.profile .portrait.mediaInspectable');
+    const el=e.target.closest('.evidenceImg.mediaInspectable,.portrait.mediaInspectable');
     if(!el)return;
     const def=targetDef(el);if(!def)return;
-    e.preventDefault();openDef(def);
+    e.preventDefault();e.stopPropagation();openDef(def);
   });
   const observer=new MutationObserver(()=>decorate());
   observer.observe(document.documentElement,{subtree:true,childList:true});
