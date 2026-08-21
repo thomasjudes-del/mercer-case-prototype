@@ -2,7 +2,7 @@
   let activeUrl=null;
   let activeFile=null;
   const defs={
-    burn:{kind:'evidence',index:0,title:{en:'Burned Vehicle - Scene Photo',fr:'Vehicule incendie - photo de scene'},file:'mercer-burned-vehicle-2016.jpg'},
+    burn:{kind:'evidence',index:0,title:{en:'Burned Vehicle - Scene Photo',fr:'Vehicule incendie - photo de scene'},file:'burned-vehicle-roadside.jpg',asset:'assets/evidence/burned-vehicle-roadside.jpg',width:1448,height:1086},
     plate:{kind:'evidence',index:1,title:{en:'Vehicle - Plate Close-up',fr:'Vehicule - gros plan de la plaque'},file:'mercer-plate-482-LZK.jpg'},
     parking:{kind:'evidence',index:2,title:{en:'Parking Lot - Vehicle Photo',fr:'Parking - photo du vehicule'},file:'mercer-westway-vehicle-2026.jpg'},
     emily:{kind:'portrait',index:0,title:{en:'Emily Mercer',fr:'Emily Mercer'},file:'emily-mercer.jpg'},
@@ -44,6 +44,12 @@
   }
 
   async function crop(def){
+    if(def.asset){
+      const r=await fetch(def.asset+'?v=hd1',{cache:'no-store'});
+      if(!r.ok)throw new Error('Could not load HD asset');
+      const blob=await r.blob();
+      return {blob,width:def.width,height:def.height};
+    }
     const img=await loadSprite();
     const half=img.naturalHeight/2;
     let sx,sy,sw,sh;
@@ -119,6 +125,12 @@
   }
 
   function decorate(root=document){
+    root.querySelectorAll('.evidenceImg.burn').forEach(el=>{
+      el.style.backgroundImage=`url('${defs.burn.asset}?v=hd1')`;
+      el.style.backgroundSize='cover';
+      el.style.backgroundPosition='center';
+      el.style.backgroundRepeat='no-repeat';
+    });
     root.querySelectorAll('.evidenceImg:not([data-inspect]),.portrait:not([data-inspect])').forEach(el=>{
       el.dataset.inspect='1';el.classList.add('mediaInspectable');el.setAttribute('role','button');el.setAttribute('tabindex','0');
       el.setAttribute('aria-label',el.classList.contains('portrait')?text('Open portrait full screen','Ouvrir le portrait en plein ecran'):text('Open image full screen','Ouvrir l image en plein ecran'));
