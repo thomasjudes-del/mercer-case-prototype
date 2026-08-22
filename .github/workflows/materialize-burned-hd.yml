@@ -1,9 +1,7 @@
 name: Materialize burned vehicle image
 on:
-  push:
+  pull_request:
     branches: [main]
-    paths:
-      - 'assets/staging/READY'
 permissions:
   contents: write
 jobs:
@@ -13,6 +11,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref }}
       - name: Rebuild and verify JPEG
         shell: bash
         run: |
@@ -28,16 +27,16 @@ jobs:
           im.verify()
           print('validated 720x476 JPEG')
           PY
-      - name: Cleanup transfer files
+      - name: Commit verified asset to PR branch
         shell: bash
         run: |
           set -euo pipefail
           rm -rf assets/staging
           rm -f assets/evidence/burned-vehicle-roadside-hd.avif
           rm -f assets/evidence/.candidate-q50.jpg
-          rm -f .github/workflows/materialize-burned-hd.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'Materialize verified burned vehicle image [skip ci]'
-          git push origin main
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Materialize verified burned vehicle image'
+          git push origin HEAD:${{ github.head_ref }}
