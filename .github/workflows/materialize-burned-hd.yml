@@ -19,15 +19,15 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p assets/evidence
-          cat assets/import-burned-hd/s2-*.b64 | tr -d '\n\r ' | base64 -d > assets/evidence/burned-vehicle-roadside-hd.jpg
-          test "$(stat -c%s assets/evidence/burned-vehicle-roadside-hd.jpg)" -eq 70862
-          echo '81e6c49c557898ce57685fb4849673670c8fd5f60a858328ca9663544764bf07  assets/evidence/burned-vehicle-roadside-hd.jpg' | sha256sum -c -
+          cat assets/import-burned-hd/q15-*.b64 | tr -d '\n\r ' | base64 -d > assets/evidence/burned-vehicle-roadside-hd.jpg
+          test "$(stat -c%s assets/evidence/burned-vehicle-roadside-hd.jpg)" -eq 39836
+          echo '902d4f4ae56524e920a8467970bcd6b3f49beda64f549eeed49899ebc1b422d6  assets/evidence/burned-vehicle-roadside-hd.jpg' | sha256sum -c -
           python - <<'PY'
           from pathlib import Path
           p=Path('assets/style.css')
           s=p.read_text()
           old='background-image:url("evidence/burned-vehicle-roadside-hd.png?v=20260822a")'
-          new='background-image:url("evidence/burned-vehicle-roadside-hd.jpg?v=20260822c")'
+          new='background-image:url("evidence/burned-vehicle-roadside-hd.jpg?v=20260822d")'
           if old not in s:
               raise SystemExit('old burned image reference not found')
           p.write_text(s.replace(old,new,1))
