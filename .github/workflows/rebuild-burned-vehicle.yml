@@ -1,7 +1,7 @@
 name: Rebuild burned vehicle asset
 on:
   push:
-    branches: [main]
+    branches: [mercer-burned-hd-fix-20260822]
     paths:
       - 'assets/staging/READY'
 permissions:
@@ -12,18 +12,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: mercer-burned-hd-fix-20260822
           fetch-depth: 0
-      - name: Rebuild JPEG
+      - name: Rebuild and verify JPEG
         shell: bash
         run: |
           set -euo pipefail
-          cat assets/staging/part-* > /tmp/burned.b64
+          cat assets/staging/part-* | tr -d '\n\r ' > /tmp/burned.b64
           base64 -d /tmp/burned.b64 > assets/evidence/burned-vehicle-roadside-hd.jpg
-          test "$(wc -c < assets/evidence/burned-vehicle-roadside-hd.jpg)" = "89177"
-          echo "829f1896cf7b0353f89d0c8ecc47fca5032abaf00eb25f2e8b33af3f2a8e214b  assets/evidence/burned-vehicle-roadside-hd.jpg" | sha256sum -c -
+          test "$(stat -c%s assets/evidence/burned-vehicle-roadside-hd.jpg)" -eq 254641
+          echo "4ade8b685b2c2faee690eb7fe6f1311e9a06d2801c0f9da7d71509b6d7b6e0cf  assets/evidence/burned-vehicle-roadside-hd.jpg" | sha256sum -c -
+      - name: Switch Mercer to verified JPEG
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('assets/style.css')
+          s=p.read_text()
+          old='evidence/burned-vehicle-roadside-hd.png?v=20260822a'
+          new='evidence/burned-vehicle-roadside-hd.jpg?v=20260822c'
+          if old not in s:
+              raise SystemExit('expected burned vehicle source not found')
+          p.write_text(s.replace(old,new,1))
+          p=Path('index.html')
+          s=p.read_text()
+          old='assets/style.css?v=6'
+          new='assets/style.css?v=7'
+          if old not in s:
+              raise SystemExit('expected stylesheet cache token not found')
+          p.write_text(s.replace(old,new,1))
+          PY
+      - name: Cleanup transfer files and commit
+        shell: bash
+        run: |
+          set -euo pipefail
           rm -rf assets/staging
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add assets/evidence/burned-vehicle-roadside-hd.jpg assets/staging
-          git commit -m "Rebuild real burned vehicle JPEG asset"
-          git push
+          rm -f .github/workflows/rebuild-burned-vehicle.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Use verified burned vehicle HD JPEG [skip ci]'
+          git push origin HEAD:mercer-burned-hd-fix-20260822
