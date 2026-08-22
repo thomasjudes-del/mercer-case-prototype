@@ -58,7 +58,7 @@ main{padding:0 14px 28px}
 .paper{margin:12px;background:#e9e4d8;color:#222;padding:20px;border-radius:10px;min-height:230px;font:14px/1.65 Georgia,"Times New Roman",serif;box-shadow:inset 0 0 0 1px rgba(30,30,30,.08)}
 .paper h2{font-size:23px;margin:0 0 12px}
 .photoWrap{padding:12px}
-.evidenceImg{display:block;width:100%;aspect-ratio:4/3;background-image:var(--media);background-size:300% 200%;background-repeat:no-repeat;background-color:#080a0c;border-radius:10px;border:1px solid #303840}.evidenceImg.burn{background-position:0 100%}.evidenceImg.plate{background-position:50% 100%}.evidenceImg.parking{background-position:100% 100%}
+.evidenceImg{display:block;width:100%;aspect-ratio:4/3;background-image:var(--media);background-size:300% 200%;background-repeat:no-repeat;background-color:#080a0c;border-radius:10px;border:1px solid #303840}.evidenceImg.burn{background-image:url("evidence/burned-vehicle-roadside-hd.png?v=20260822a");background-size:cover;background-position:center}.evidenceImg.plate{background-position:50% 100%}.evidenceImg.parking{background-position:100% 100%}
 .caption{font-size:11px;color:#a6adb4;padding:10px 3px 2px;display:flex;justify-content:space-between;gap:8px}
 .people{display:grid;gap:9px}
 .person{display:grid;grid-template-columns:92px 1fr 20px;min-height:94px;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:linear-gradient(90deg,#171d23,#12171c);color:#fff;text-align:left;padding:0;width:100%;box-shadow:0 9px 22px rgba(0,0,0,.12)}
