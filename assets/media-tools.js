@@ -2,7 +2,7 @@
   let activeUrl=null;
   let activeFile=null;
   const defs={
-    burn:{kind:'evidence',index:0,title:{en:'Burned Vehicle - Scene Photo',fr:'Vehicule incendie - photo de scene'},file:'burned-vehicle-roadside.jpg',asset:'assets/evidence/burned-vehicle-roadside.jpg',width:1448,height:1086},
+    burn:{kind:'evidence',index:0,title:{en:'Burned Vehicle - Scene Photo',fr:'Vehicule incendie - photo de scene'},file:'burned-vehicle-roadside-hd.avif',asset:'assets/evidence/burned-vehicle-roadside-hd.avif'},
     plate:{kind:'evidence',index:1,title:{en:'Vehicle - Plate Close-up',fr:'Vehicule - gros plan de la plaque'},file:'mercer-plate-482-LZK.jpg'},
     parking:{kind:'evidence',index:2,title:{en:'Parking Lot - Vehicle Photo',fr:'Parking - photo du vehicule'},file:'mercer-westway-vehicle-2026.jpg'},
     emily:{kind:'portrait',index:0,title:{en:'Emily Mercer',fr:'Emily Mercer'},file:'emily-mercer.jpg'},
@@ -45,10 +45,17 @@
 
   async function crop(def){
     if(def.asset){
-      const r=await fetch(def.asset+'?v=hd1',{cache:'no-store'});
-      if(!r.ok)throw new Error('Could not load HD asset');
+      const r=await fetch(def.asset+'?v=20260822f',{cache:'no-store'});
+      if(!r.ok)throw new Error('Could not load asset: '+r.status);
       const blob=await r.blob();
-      return {blob,width:def.width,height:def.height};
+      const url=URL.createObjectURL(blob);
+      try{
+        const img=new Image();
+        img.src=url;
+        if(img.decode)await img.decode();
+        else await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject});
+        return {blob,width:img.naturalWidth,height:img.naturalHeight,type:blob.type||'image/avif'};
+      } finally { URL.revokeObjectURL(url); }
     }
     const img=await loadSprite();
     const half=img.naturalHeight/2;
@@ -66,7 +73,7 @@
     ctx.drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
     const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.96));
     if(!blob)throw new Error('Could not create image');
-    return {blob,width:canvas.width,height:canvas.height};
+    return {blob,width:canvas.width,height:canvas.height,type:'image/jpeg'};
   }
 
   function modal(){
@@ -100,8 +107,7 @@
       if(err&&err.name==='AbortError')return;
       console.error('Share failed',err);
     }
-    const url=activeUrl;
-    if(url)window.open(url,'_blank');
+    if(activeUrl)window.open(activeUrl,'_blank');
   }
 
   async function openDef(def){
@@ -115,7 +121,7 @@
       const out=await crop(def);
       if(activeUrl)URL.revokeObjectURL(activeUrl);
       activeUrl=URL.createObjectURL(out.blob);
-      activeFile=new File([out.blob],def.file,{type:'image/jpeg'});
+      activeFile=new File([out.blob],def.file,{type:out.type||out.blob.type||'application/octet-stream'});
       im.src=activeUrl;im.alt=def.title[lang()];im.classList.remove('mvLoading');
       m.querySelector('.mvMeta').textContent=`${out.width} × ${out.height} px · ${text('source resolution','resolution source')}`;
     }catch(err){
@@ -126,7 +132,7 @@
 
   function decorate(root=document){
     root.querySelectorAll('.evidenceImg.burn').forEach(el=>{
-      el.style.backgroundImage=`url('${defs.burn.asset}?v=hd1')`;
+      el.style.backgroundImage=`url('${defs.burn.asset}?v=20260822f')`;
       el.style.backgroundSize='cover';
       el.style.backgroundPosition='center';
       el.style.backgroundRepeat='no-repeat';
