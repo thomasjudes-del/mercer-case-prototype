@@ -14,29 +14,62 @@ jobs:
         with:
           ref: mercer-burned-hd-final
           fetch-depth: 0
-      - name: Rebuild and verify JPEG
+      - name: Recover and verify JPEG
         shell: bash
         run: |
           set -euo pipefail
-          cat assets/staging/part-* | tr -d '\n\r ' > /tmp/burned.b64
+          git fetch origin mercer-burned-hd-fix-20260822
+          git show origin/mercer-burned-hd-fix-20260822:assets/evidence/burned-vehicle-roadside-hd-q9.b64 | tr -d '\n\r ' > /tmp/burned.b64
           base64 -d /tmp/burned.b64 > assets/evidence/burned-vehicle-roadside-hd.jpg
-          test "$(stat -c%s assets/evidence/burned-vehicle-roadside-hd.jpg)" -eq 102423
-          echo "b1fc948e529b8a87be27414e3eca67d72189d318d8627021ed6e8f307c01323f  assets/evidence/burned-vehicle-roadside-hd.jpg" | sha256sum -c -
-      - name: Wire verified JPEG and bump cache
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('assets/evidence/burned-vehicle-roadside-hd.jpg')
+          d=p.read_bytes()
+          if len(d) < 80000:
+              raise SystemExit(f'asset too small: {len(d)} bytes')
+          if d[:2] != b'\xff\xd8' or d[-2:] != b'\xff\xd9':
+              raise SystemExit('not a complete JPEG')
+          i=2; w=h=None
+          sof={0xC0,0xC1,0xC2,0xC3,0xC5,0xC6,0xC7,0xC9,0xCA,0xCB,0xCD,0xCE,0xCF}
+          while i < len(d)-9:
+              if d[i] != 0xFF:
+                  i += 1; continue
+              while i < len(d) and d[i] == 0xFF: i += 1
+              marker=d[i]; i += 1
+              if marker in (0xD8,0xD9) or 0xD0 <= marker <= 0xD7: continue
+              if i+2 > len(d): break
+              L=int.from_bytes(d[i:i+2],'big')
+              if marker in sof:
+                  h=int.from_bytes(d[i+3:i+5],'big')
+                  w=int.from_bytes(d[i+5:i+7],'big')
+                  break
+              i += L
+          if (w,h)!=(1240,820):
+              raise SystemExit(f'wrong dimensions: {w}x{h}')
+          print(f'validated JPEG {w}x{h}, {len(d)} bytes')
+          PY
+          sha256sum assets/evidence/burned-vehicle-roadside-hd.jpg
+      - name: Wire JPEG and bump cache
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
+          import re
           p=Path('index.html')
           s=p.read_text()
-          s=s.replace('assets/evidence/burned-vehicle-roadside-hd.avif?v=20260822f','assets/evidence/burned-vehicle-roadside-hd.jpg?v=20260822g')
-          s=s.replace('assets/media-tools.js?v=10','assets/media-tools.js?v=11')
+          old='assets/evidence/burned-vehicle-roadside-hd.avif?v=20260822f'
+          if old not in s: raise SystemExit('expected AVIF reference not found')
+          s=s.replace(old,'assets/evidence/burned-vehicle-roadside-hd.jpg?v=20260822g',1)
+          if 'assets/media-tools.js?v=10' not in s: raise SystemExit('expected media-tools cache token not found')
+          s=s.replace('assets/media-tools.js?v=10','assets/media-tools.js?v=11',1)
           p.write_text(s)
           p=Path('assets/media-tools.js')
           s=p.read_text()
-          s=s.replace("file:'burned-vehicle-roadside.jpg',asset:'assets/evidence/burned-vehicle-roadside-hd.avif',width:1448,height:1086","file:'burned-vehicle-roadside-hd.jpg',asset:'assets/evidence/burned-vehicle-roadside-hd.jpg',width:1240,height:820")
-          s=s.replace("file:'burned-vehicle-roadside.jpg',asset:'assets/evidence/burned-vehicle-roadside.jpg',width:1448,height:1086","file:'burned-vehicle-roadside-hd.jpg',asset:'assets/evidence/burned-vehicle-roadside-hd.jpg',width:1240,height:820")
+          pat=r"(burn:\{kind:'evidence',index:0,title:\{en:'Burned Vehicle - Scene Photo',fr:'Vehicule incendie - photo de scene'\},)file:'[^']+',asset:'[^']+',width:\d+,height:\d+(\},)"
+          rep=r"\1file:'burned-vehicle-roadside-hd.jpg',asset:'assets/evidence/burned-vehicle-roadside-hd.jpg',width:1240,height:820\2"
+          s,n=re.subn(pat,rep,s,count=1)
+          if n != 1: raise SystemExit('burn media definition not found')
           p.write_text(s)
           PY
       - name: Cleanup and commit
