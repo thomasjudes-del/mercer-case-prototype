@@ -19,7 +19,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p assets/evidence
-          cat assets/import-burned-hd/part-*.b64 | tr -d '\n\r ' | base64 -d > assets/evidence/burned-vehicle-roadside-hd.jpg
+          cat assets/import-burned-hd/s2-*.b64 | tr -d '\n\r ' | base64 -d > assets/evidence/burned-vehicle-roadside-hd.jpg
           test "$(stat -c%s assets/evidence/burned-vehicle-roadside-hd.jpg)" -eq 70862
           echo '81e6c49c557898ce57685fb4849673670c8fd5f60a858328ca9663544764bf07  assets/evidence/burned-vehicle-roadside-hd.jpg' | sha256sum -c -
           python - <<'PY'
