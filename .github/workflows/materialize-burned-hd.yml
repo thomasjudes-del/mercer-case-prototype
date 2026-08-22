@@ -1,20 +1,19 @@
 name: Materialize burned vehicle HD
 on:
   push:
-    branches: [mercer-hd-final-20260822]
-    paths:
-      - 'assets/import-burned-hd/READY'
+    branches: [main]
 permissions:
   contents: write
 jobs:
   materialize:
+    if: contains(github.event.head_commit.message, 'Promote burned HD transfer')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: mercer-hd-final-20260822
+          ref: main
           fetch-depth: 0
-      - name: Decode and verify image
+      - name: Decode, verify and switch image
         shell: bash
         run: |
           set -euo pipefail
@@ -37,14 +36,17 @@ jobs:
               raise SystemExit('style cache marker not found')
           i.write_text(h.replace('assets/style.css?v=6','assets/style.css?v=7',1))
           PY
-      - name: Cleanup and commit
+      - name: Cleanup transfer files and obsolete assets
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf assets/import-burned-hd
+          rm -rf assets/import-burned-hd assets/staging
+          rm -f assets/evidence/burned-vehicle-roadside-hd.png
+          rm -f assets/evidence/burned-vehicle-roadside.jpg
+          rm -f .github/workflows/rebuild-burned-vehicle.yml
           rm -f .github/workflows/materialize-burned-hd.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
           git commit -m 'Use verified HD burned vehicle photo [skip ci]'
-          git push origin HEAD:mercer-hd-final-20260822
+          git push origin HEAD:main
