@@ -1,0 +1,50 @@
+name: Materialize burned vehicle HD
+on:
+  push:
+    branches: [mercer-hd-final-20260822]
+    paths:
+      - 'assets/import-burned-hd/READY'
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: mercer-hd-final-20260822
+          fetch-depth: 0
+      - name: Decode and verify image
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/evidence
+          cat assets/import-burned-hd/part-*.b64 | tr -d '\n\r ' | base64 -d > assets/evidence/burned-vehicle-roadside-hd.jpg
+          test "$(stat -c%s assets/evidence/burned-vehicle-roadside-hd.jpg)" -eq 70862
+          echo '81e6c49c557898ce57685fb4849673670c8fd5f60a858328ca9663544764bf07  assets/evidence/burned-vehicle-roadside-hd.jpg' | sha256sum -c -
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('assets/style.css')
+          s=p.read_text()
+          old='background-image:url("evidence/burned-vehicle-roadside-hd.png?v=20260822a")'
+          new='background-image:url("evidence/burned-vehicle-roadside-hd.jpg?v=20260822c")'
+          if old not in s:
+              raise SystemExit('old burned image reference not found')
+          p.write_text(s.replace(old,new,1))
+          i=Path('index.html')
+          h=i.read_text()
+          if 'assets/style.css?v=6' not in h:
+              raise SystemExit('style cache marker not found')
+          i.write_text(h.replace('assets/style.css?v=6','assets/style.css?v=7',1))
+          PY
+      - name: Cleanup and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf assets/import-burned-hd
+          rm -f .github/workflows/materialize-burned-hd.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Use verified HD burned vehicle photo [skip ci]'
+          git push origin HEAD:mercer-hd-final-20260822
