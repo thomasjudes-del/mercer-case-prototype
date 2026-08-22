@@ -2,7 +2,7 @@
   let activeUrl=null;
   let activeFile=null;
   const defs={
-    burn:{kind:'evidence',index:0,title:{en:'Burned Vehicle - Scene Photo',fr:'Vehicule incendie - photo de scene'},file:'burned-vehicle-roadside-hd.avif',asset:'assets/evidence/burned-vehicle-roadside-hd.avif'},
+    burn:{kind:'evidence',index:0,title:{en:'Burned Vehicle - Scene Photo',fr:'Vehicule incendie - photo de scene'},file:'burned-vehicle-roadside-hd.jpg',asset:'assets/evidence/burned-vehicle-roadside-hd.jpg'},
     plate:{kind:'evidence',index:1,title:{en:'Vehicle - Plate Close-up',fr:'Vehicule - gros plan de la plaque'},file:'mercer-plate-482-LZK.jpg'},
     parking:{kind:'evidence',index:2,title:{en:'Parking Lot - Vehicle Photo',fr:'Parking - photo du vehicule'},file:'mercer-westway-vehicle-2026.jpg'},
     emily:{kind:'portrait',index:0,title:{en:'Emily Mercer',fr:'Emily Mercer'},file:'emily-mercer.jpg'},
@@ -45,7 +45,7 @@
 
   async function crop(def){
     if(def.asset){
-      const r=await fetch(def.asset+'?v=20260822f',{cache:'no-store'});
+      const r=await fetch(def.asset+'?v=20260822h',{cache:'no-store'});
       if(!r.ok)throw new Error('Could not load asset: '+r.status);
       const blob=await r.blob();
       const url=URL.createObjectURL(blob);
@@ -54,7 +54,7 @@
         img.src=url;
         if(img.decode)await img.decode();
         else await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject});
-        return {blob,width:img.naturalWidth,height:img.naturalHeight,type:blob.type||'image/avif'};
+        return {blob,width:img.naturalWidth,height:img.naturalHeight,type:blob.type||'image/jpeg'};
       } finally { URL.revokeObjectURL(url); }
     }
     const img=await loadSprite();
@@ -132,7 +132,7 @@
 
   function decorate(root=document){
     root.querySelectorAll('.evidenceImg.burn').forEach(el=>{
-      el.style.backgroundImage=`url('${defs.burn.asset}?v=20260822f')`;
+      el.style.backgroundImage=`url('${defs.burn.asset}?v=20260822h')`;
       el.style.backgroundSize='cover';
       el.style.backgroundPosition='center';
       el.style.backgroundRepeat='no-repeat';
