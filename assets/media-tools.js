@@ -3,7 +3,7 @@
   let activeFile=null;
   const defs={
     burn:{kind:'evidence',index:0,title:{en:'Burned Vehicle - Scene Photo',fr:'Vehicule incendie - photo de scene'},file:'burned-vehicle-roadside-hd.jpg',asset:'assets/evidence/burned-vehicle-roadside-hd.jpg'},
-    plate:{kind:'evidence',index:1,title:{en:'Vehicle - Plate Close-up',fr:'Vehicule - gros plan de la plaque'},file:'mercer-plate-482-LZK.jpg'},
+    plate:{kind:'evidence',index:1,title:{en:'Vehicle - Plate Close-up',fr:'Vehicule - gros plan de la plaque'},file:'mercer-plate-482-LZK.jpg',asset:'assets/evidence/mercer-plate-482-LZK.jpg'},
     parking:{kind:'evidence',index:2,title:{en:'Parking Lot - Vehicle Photo',fr:'Parking - photo du vehicule'},file:'mercer-westway-vehicle-2026.jpg'},
     emily:{kind:'portrait',index:0,title:{en:'Emily Mercer',fr:'Emily Mercer'},file:'emily-mercer.jpg'},
     daniel:{kind:'portrait',index:1,title:{en:'Daniel Reyes',fr:'Daniel Reyes'},file:'daniel-reyes.jpg'},
@@ -45,7 +45,7 @@
 
   async function crop(def){
     if(def.asset){
-      const r=await fetch(def.asset+'?v=20260822h',{cache:'no-store'});
+      const r=await fetch(def.asset+'?v=20260823a',{cache:'no-store'});
       if(!r.ok)throw new Error('Could not load asset: '+r.status);
       const blob=await r.blob();
       const url=URL.createObjectURL(blob);
@@ -131,12 +131,15 @@
   }
 
   function decorate(root=document){
-    root.querySelectorAll('.evidenceImg.burn').forEach(el=>{
-      el.style.backgroundImage=`url('${defs.burn.asset}?v=20260822h')`;
-      el.style.backgroundSize='cover';
-      el.style.backgroundPosition='center';
-      el.style.backgroundRepeat='no-repeat';
-    });
+    for(const id of ['burn','plate']){
+      const def=defs[id];
+      root.querySelectorAll('.evidenceImg.'+id).forEach(el=>{
+        el.style.backgroundImage=`url('${def.asset}?v=20260823a')`;
+        el.style.backgroundSize='cover';
+        el.style.backgroundPosition='center';
+        el.style.backgroundRepeat='no-repeat';
+      });
+    }
     root.querySelectorAll('.evidenceImg:not([data-inspect]),.portrait:not([data-inspect])').forEach(el=>{
       el.dataset.inspect='1';el.classList.add('mediaInspectable');el.setAttribute('role','button');el.setAttribute('tabindex','0');
       el.setAttribute('aria-label',el.classList.contains('portrait')?text('Open portrait full screen','Ouvrir le portrait en plein ecran'):text('Open image full screen','Ouvrir l image en plein ecran'));
